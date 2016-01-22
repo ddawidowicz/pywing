@@ -1,0 +1,68 @@
+'''
+This module
+INPUTS:
+
+OUTPUTS:
+
+USAGE:
+'''
+
+import os
+import sys
+import pudb
+import time
+import numpy as np
+import scipy as sp
+import pandas as pd
+import statsmodels.api as sm
+import matplotlib
+from scipy import stats
+#matplotlib.use('Agg')
+import matplotlib.pyplot as plt
+pd.options.display.width = 200 #set the display width for printing pandas df
+np.set_printoptions(linewidth=200) #same for numpy
+
+
+def start_meta(start_str):
+    outlog = open('meta.txt', 'wt')
+    outlog.write('Started: %s\n' % time.strftime('%I:%M:%S %p', start_str))
+    outlog.close()
+    
+
+def other_meta(content):
+    outlog = open('meta.txt', 'at')
+    outlog.write('%s\n' % content)
+    outlog.close()
+
+
+def end_meta(start, end):
+    outlog = open('meta.txt', 'at')
+    outlog.write('Completed: %s\n' % time.strftime('%I:%M:%S %p', time.localtime()))
+    outlog.write('Elapsed time = %.4f seconds\n' % (end-start))
+    outlog.close()
+
+
+if __name__ == '__main__':
+    # ======================================================================== #
+    #                           Control Panel                                  #
+    # ======================================================================== #
+    infile = ''
+    
+    # ======================================================================== #
+    
+    
+    # ------------------------------ Initialize ------------------------------ #
+    start = time.time() #used for elapsed time
+    start_str = time.localtime() #used for printing time
+    print "Started:", time.strftime("%I:%M:%S %p", start_str)
+    start_meta(start_str)
+    
+    # ------------------------------ Get Data -------------------------------- #
+    df = pd.read_csv(infile, sep='\t')
+    
+    
+    # ------------------------------- Wrap Up -------------------------------- #
+    end = time.time()
+    print '\nElapsed time = %.4f seconds' % (end-start)
+    end_meta(start, end)
+

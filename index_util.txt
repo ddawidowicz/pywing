@@ -1,0 +1,235 @@
+def get_describe(x)
+	This function prints a basic summary of a numpy array or list that is passed
+	in. Right now it only works for a vector.
+	INPUT:
+	x   = A numpy array or list of values
+	OUTPUT (prints):
+	Count
+	Min
+	Max
+	Q1
+	Median
+	Q3
+	Mean
+	Variance
+	Skew
+	Kurtosis
+# ============================================================================ #
+
+get_date_obj(x)
+    This function takes in an integer like 20140901, or an array of such 
+    integers and creates a Python datetime object.
+    INPUT:
+    x       = An integer, or array of integers, that represent a date in 
+              the form 20140901
+    OUTPUT:
+    x_dt    = A Python datetime object that represents the integer(s) 
+              passed in
+# ============================================================================ #
+
+def get_frequency(x, lag_corr)
+    freq = np.abs(acf(x, nlags=lag_corr, qstat=True)[0][1:]).argmax()
+    return freq+1 #+1 b/c it is 0-indexed
+    This function uses the statsmodels.tsa.stattools function acf or 
+    autocorrelation function to find the most likely frequency for the data. 
+    What this function does is look at all the lags, up to the number of 
+    lags specified by lag_corr, and computes the correlation between the 
+    original point and the lag point. The maximum absolute correlation is 
+    taken as a proxy for a frequency. For example, we may find a strong 
+    correlation between points that are 7, 14, 21, etc. days apart if the 
+    sender is a weekly sender.
+    INPUTS:
+    x           = A vector of data
+    lag_corr    = The maximum number of lags to consider
+    OUTPUT:
+    freq+1      = The lag with the maximum correlation, which is a proxy for 
+                  the frequency. A +1 is included for readability since 
+                  Python is 0-indexed, and because the slicing done on the 
+                  freq vector equates a 0-index with a 1-day lag.
+# ============================================================================ #
+
+def fmt_value(y) 
+    This function formats the data to have a comma between the thousands or 
+    millions and to have only two decimal places.
+    INPUT:
+    y   = The number to be formated
+    OUTPUT:
+    The formatted number
+# ============================================================================ #
+
+def remove_autocorr(x, lag_max, lag_corr, sig_level):
+    This function removes autocorrelation from data by repeated differencing. This 
+    is the only function that needs to be called.
+    INPUTS:
+    x           = A vector of data
+    lag_max     = The maximum number of lags to consider for differencing
+    lag_corr    = The number of lags to use in the test for independence
+    sig_level   = A float that determines the cutoff for whether the vector of data
+                  has reached an acceptable state of independence. In general
+                  anything below 0.05 signifies significant autocorrelation.
+     
+    OUTPUTS:
+    x_diff      = The vector of differenced data
+    x_box       = The p-value from the Box.test above sig_level indicates independence 
+    offset      = The number of lags that were used in the differencing.
+                  This number should be added to any index to map back to the 
+                  oringinal data vector.
+
+    NOTE:
+    The only function that needs to be called is remove_autocorr() 
+# ============================================================================ #
+
+def get_trend(x, smooth_f)
+    This function performs lowess smoothing over the data to produce a trend 
+    line. Basically this is like a moving average, but a little smarter. It 
+    computes local linear regression models around each point, where local 
+    is defined as some percentage of the data, and uses the model to predict 
+    where the point "should" be to follow the trend. The resulting vectors 
+    is a smoothed version of the original. The smooth_f parameter determines 
+    the extent of the smoothing.
+    INPUTS:
+    x           = The original data vector, e.g. daily volume
+    smooth_f    = The percentage of points to use for smoothing. This 
+                  determines the local neighborhood around each point for the 
+                  linear regression model creation. I used 0.2, but also 
+                  thought it might be natural to use freq/len(x)
+    OUTPUT:
+    trend       = The smoothed data vector.
+# ============================================================================ #
+
+MODULE get_ts_decompose.py
+def get_decompose(x):
+    This function peforms an additive time series decomposition.
+    In classic time series decomposition we imagine the data vector Y to be 
+    composed of a trend element (T), a seasonal component (S), and 
+    random noise (R). In an additive model we can define the time series as
+    Y = T + S + R, where
+    T = some sort of moving average or better a weighted local regression
+        model (Lowess or loess)
+    S = first find the trend, then Y - T = S + R. However, the season is a repeated
+        portion of that quantity so we can find it by averaging all the points
+        of S + R over the frequency. For example, if our frequency is 12, then
+        we average points 1, 13, 25, ... then points 2, 14, 26, ..., etc.
+    R = Y - T - S
+    A very good reference is found at 
+    http://www.stats.ox.ac.uk/~burke/Autocorrelation/Decomposition%20and%20Smoothing.pdf
+# ---------------------------------------------------------------------------- #
+
+def get_frequency(x, lag_corr):
+    freq = np.abs(acf(x, nlags=lag_corr, qstat=True)[0][1:]).argmax()
+    return freq+1 #+1 b/c it is 0-indexed
+    This function uses the statsmodels.tsa.stattools function acf or 
+    autocorrelation function to find the most likely frequency for the data. 
+    What this function does is look at all the lags, up to the number of 
+    lags specified by lag_corr, and computes the correlation between the 
+    original point and the lag point. The maximum absolute correlation is 
+    taken as a proxy for a frequency. For example, we may find a strong 
+    correlation between points that are 7, 14, 21, etc. days apart if the 
+    sender is a weekly sender.
+    INPUTS:
+    x           = A vector of data
+    lag_corr    = The maximum number of lags to consider
+    OUTPUT:
+    freq+1      = The lag with the maximum correlation, which is a proxy for 
+                  the frequency. A +1 is included for readability since 
+                  Python is 0-indexed, and because the slicing done on the 
+                  freq vector equates a 0-index with a 1-day lag.
+# ---------------------------------------------------------------------------- #
+
+def get_trend(x, smooth_f):
+    This function performs lowess smoothing over the data to produce a trend 
+    line. Basically this is like a moving average, but a little smarter. It 
+    computes local linear regression models around each point, where local is 
+    defined as some percentage of the data, and uses the model to predict 
+    where the point "should" be to follow the trend. The resulting vectors is 
+    a smoothed version of the original. The smooth_f parameter determines the 
+    extent of the smoothing.
+    INPUTS:
+    x           = The original data vector, e.g. daily volume
+    smooth_f    = The percentage of points to use for smoothing. This determines
+                  the local neighborhood around each point for the linear
+                  regression model creation. I used 0.2, but also thought it
+                  might be natural to use freq/len(x)
+    OUTPUT:
+    trend       = The smoothed data vector.
+# ---------------------------------------------------------------------------- #
+
+def get_noise(x, trend, season):
+    The random noise of a time series (in an additive model) is found by
+    R = Y - T - S, where R is the random component, Y is the original data
+    vector, T is the trend vector, and S is the seasonal component.
+# ---------------------------------------------------------------------------- #
+
+def get_season(x, trend, freq):
+    This function uses the trend data found in get_trend() for time series 
+    decomposition resulting in a trend, season, and noise component to the
+    time series. The seasonal component, found by subtracting the trend from
+    the oringal time series and leveraging the frequency, extracts the 
+    underlying repeat sending patterns.
+    INPUTS
+    x       = Original data vector (time series)
+    trend   = The trend vector found from get_trend()
+    freq    = The frequency of the time series found with get_frequency()
+    OUTPUT
+    season  = The vector representing the seasonal component of the time series
+# ---------------------------------------------------------------------------- #
+
+def plot_decomp(dates, x, xt, xs, titles, x_lbl, y_lbls):
+    This function plots a time series decomposition plot containing the 
+    original data, the trend data, and the seasonal data. It formats the 
+    dates to be every week starting on Monday.
+    INPUTS:
+    dates   = A list of datetime objects
+    x       = The original data vector (numpy)
+    xt      = The trend vector (numpy)
+    xs      = The seasonal vector (numpy)
+    titles  = A list of three titles for the original, trend, and season plots
+    x_lbl   = The overall x-axis label, e.g. Week (Marked on Monday)
+    y_lbls  = A list of three y-axis labels for each plot
+    OUTPUT:
+    plt     = A matplotlib.pyplot object - you will need to call plt.show()
+              or plt.savefig('foo.png', bbox_inches='tight')
+# ============================================================================ #
+
+
+def get_cp_data(dates, x, lag_max, lag_corr, sig_level, CI, N, prune_period):
+    This function performs change point analysis and returns a list of 
+    information related to the change points found.
+    INPUTS:
+    dates           = The dates for the data (vector)
+    x               = The data vector, e.g. volume data
+    lag_max         = The maximum lag to use during the differencing step prior
+                      to performing change point analysis. The differencing is
+                      repeated until autocorrelation is sufficiently removed
+                      and may actually difference the data by as much as
+                      1.5 * lag_max. For example, if 14 is used for lag_max,
+                      the data may be differenced by 21 days.
+    lag_corr        = The maximum number of lags to use while computing the 
+                      independce of the elements in the vector during 
+                      differencing
+    sig_level       = The signficance level for the test of independence to use
+                      while differencing to determine if autocorrelation has 
+                      been sufficiently removed. A common value is 0.05.
+    CI              = The confidence on the test for significance of the change
+                      point analysis. It turns out that the best results use a 
+                      very generous value, e.g. ~0.20, for this confidence for 
+                      initial discovery of change points and then relies on 
+                      filtering of these candidate points.
+    N               = The number of bootstrap samples for determining the CI of 
+                      a change point.
+    prune_period    = The minimum number of days between change points. The
+                      process of change point analysis may put two change points
+                      only a day apart which clouds this issue of which is the
+                      best point to examine. This threshold forces change points
+                      to be a certain number of days apart, e.g. 7 days.
+    OUTPUTS:
+    cp_pruned       = The list of change points. Each element of the list is
+                      another list with the form 
+                      [idx, confidence, from_mean, to_mean, level]
+    y_mean          = A vector of data that contains the mean for that 
+                      subsection, broken by the change points, for each value 
+                      of x. This allows for plotting the mean horizontal line 
+                      for each subsection defined by the change points.
+    y_cp            = A point on the end of the mean to mark the change point 
+                      itself. The rest of the values in the vector are None.
+    cp_list         = A friendly-formatted version of cp_pruned for user display.
