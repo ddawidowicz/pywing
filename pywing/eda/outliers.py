@@ -1,3 +1,10 @@
+"""
+http://scikit-learn.org/stable/auto_examples/covariance/plot_outlier_detection.html
+http://scikit-learn.org/stable/modules/outlier_detection.html
+https://stackoverflow.com/questions/22354094/pythonic-way-of-detecting-outliers-in-one-dimensional-observation-data
+
+"""
+
 import numpy as np
 
 def get_mild_iqr_outlier_bounds(df):
